@@ -26,8 +26,9 @@ class EmployeeRequest extends FormRequest
         return [
             'first_name' => ['required'],
             'last_name' => ['required'],
+            'company_id' => ['required', 'exists:companies,id'],
             'email' => ['email'],
-            'phone' => ['regex:/^([0-9\s\-\+\(\)]*)$/|min:11'],
+            'phone' => ['regex:/^([0-9\s\-\+\(\)]*)$/', 'min:11'],
         ];
     }
 }

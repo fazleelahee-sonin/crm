@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use App\Models\Company;
+use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -106,10 +107,42 @@ class CompaniesTest extends TestCase
         $response = $this->json('POST', '/api/v1/companies', $data, ['Accept' => 'application/json']);
         $response->assertStatus(201);
 
-        $companyId = $response->json()['data'];
-        $location = storage_path('app/public/logo/' . $companyId['id'] . '-abc-international.jpg');
+        $company = $response->json()['data'];
+        $location = storage_path('app/public/logo/' . $company['id'] . '-abc-international.jpg');
         $this->assertTrue(file_exists($location));
         unlink($location);
+    }
+
+    public function testDeleteCompanyWithEmployees()
+    {
+        $company = Company::factory()
+            ->has(Employee::factory()->count(10))
+            ->create();
+
+        $response = $this->json('DELETE', '/api/v1/companies/' . $company->id, ['Accept' => 'application/json']);
+        $response->assertStatus(204);
+    }
+
+    public function testDeleteCompanyWithCompanyLogo(): void
+    {
+
+        $data = [
+            'name' => 'ABC International',
+            'email' => 'abcd@test.com',
+            'website' => 'http://www.test.com',
+            'company_logo' => UploadedFile::fake()->image('avatar.jpg', 100, 100),
+        ];
+
+        $response = $this->json('POST', '/api/v1/companies', $data, ['Accept' => 'application/json']);
+        $response->assertStatus(201);
+
+        $company = $response->json()['data'];
+        $response = $this->json('DELETE', '/api/v1/companies/' . $company['id'], ['Accept' => 'application/json']);
+        $response->assertStatus(204);
+
+        //make sure file delete from the disks when - delete request is performed.
+        $location = storage_path('app/public/logo/' . $company['id'] . '-abc-international.jpg');
+        $this->assertFalse(file_exists($location));
     }
 
 }

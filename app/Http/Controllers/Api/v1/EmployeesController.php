@@ -8,6 +8,7 @@ use App\Http\Resources\EmployeeCollection;
 use App\Http\Resources\EmployeeResouce;
 use App\Models\Company;
 use App\Models\Employee;
+use Exception;
 use Illuminate\Http\Request;
 
 class EmployeesController extends Controller
@@ -17,7 +18,7 @@ class EmployeesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Company $company)
+    public function index()
     {
         return new EmployeeCollection(Employee::paginate(10));
     }
@@ -27,7 +28,7 @@ class EmployeesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Company $company)
+    public function create()
     {
         /**
          * For this application structure create method not needed.
@@ -42,20 +43,23 @@ class EmployeesController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Company $company, EmployeeRequest $request)
+    public function store(EmployeeRequest $request)
     {
         try {
-            $company->employees()
+            $company = Company::find($request->get('company_id'));
+            $employee = $company->employees()
                 ->save(new Employee($request->all()));
         } catch (\Exception $e) {
             return response()->json([
-                'data' => [
-                    'errors' => $e->getMessage(),
-                ],
+                'errors' => $e->getMessage(),
             ], 422);
         }
 
-        return response()->json([], 201);
+        return response()->json([
+            'data' => [
+                'id' => $employee->id,
+            ],
+        ], 201);
     }
 
     /**
@@ -90,12 +94,11 @@ class EmployeesController extends Controller
     public function update(EmployeeRequest $request, Employee $employee)
     {
         try {
+            $company = Company::find($request->get('company_id'));
             $employee->update($request->all());
         } catch (\Exception $e) {
             return response()->json([
-                'data' => [
-                    'errors' => $e->getMessage(),
-                ],
+                'errors' => $e->getMessage(),
             ], 422);
         }
 
@@ -114,9 +117,7 @@ class EmployeesController extends Controller
             $employee->delete();
         } catch (\Exception $e) {
             return response()->json([
-                'data' => [
-                    'errors' => $e->getMessage(),
-                ],
+                'errors' => $e->getMessage(),
             ], 422);
         }
         return response()->json([], 204);
