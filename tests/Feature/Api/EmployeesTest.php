@@ -106,7 +106,7 @@ class EmployeesTest extends TestCase
         ];
 
         $response = $this->json('PUT', $endpoint, $updatedData, ['Accept' => 'application/json']);
-        $response->assertStatus(204);
+        $response->assertStatus(200);
 
         $employee = Employee::find($employee->id);
 
