@@ -135,12 +135,8 @@ class CompaniesController extends Controller
             ], 422);
 
         }
-        return response()->json([
-            'data' => [
-                'id' => $company->id,
-            ],
-        ], 200);
 
+        return new CompanyResource($company);
     }
 
     /**

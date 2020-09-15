@@ -12,7 +12,7 @@ class EmployeeCollection extends ResourceCollection
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public $collects = 'App\Http\Resources\Cms\User\EmployeeResource';
+    public $collects = 'App\Http\Resources\EmployeeResource';
 
     public function toArray($request)
     {

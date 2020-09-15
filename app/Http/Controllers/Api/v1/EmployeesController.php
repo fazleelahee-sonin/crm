@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EmployeeRequest;
 use App\Http\Resources\EmployeeCollection;
-use App\Http\Resources\EmployeeResouce;
+use App\Http\Resources\EmployeeResource;
 use App\Models\Company;
 use App\Models\Employee;
 use Exception;
@@ -70,7 +70,7 @@ class EmployeesController extends Controller
      */
     public function show(Employee $employee)
     {
-        return new EmployeeResouce($employee);
+        return new EmployeeResource($employee);
     }
 
     /**
@@ -81,7 +81,7 @@ class EmployeesController extends Controller
      */
     public function edit(Employee $employee)
     {
-        return new EmployeeResouce($employee);
+        return new EmployeeResource($employee);
     }
 
     /**
@@ -102,7 +102,7 @@ class EmployeesController extends Controller
             ], 422);
         }
 
-        return response()->json([], 204);
+        return new EmployeeResource($employee);
     }
 
     /**
